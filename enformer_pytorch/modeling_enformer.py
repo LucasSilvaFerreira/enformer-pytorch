@@ -180,7 +180,9 @@ class AttentionPool(nn.Module):
             mask = F.pad(mask, (0, remainder), value = True)
 
         x = self.pool_fn(x)
-        logits = self.to_attn_logits(x)
+        #logits = self.to_attn_logits(x)
+        logits = torch.nan_to_num( self.to_attn_logits(x), posinf=10e-5, neginf=-10e-5)  #avoid infs coming from the logits, TODO check the reason of to_attn_logits give nans
+
 
         if needs_padding:
             mask_value = -torch.finfo(logits.dtype).max
